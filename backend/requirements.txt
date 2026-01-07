@@ -1,0 +1,60 @@
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Database
+sqlalchemy==2.0.25
+alembic==1.13.1
+psycopg2-binary==2.9.9
+asyncpg==0.29.0
+
+# Redis
+redis==5.0.1
+hiredis==2.3.2
+
+# Task Queue
+celery==5.3.6
+
+# Data Processing
+pandas==2.2.0
+numpy==1.26.3
+polars==0.20.6
+
+# Market Data
+yfinance==0.2.35
+requests==2.31.0
+
+# Technical Analysis
+# Implementing indicators using pure pandas/numpy (no external dependencies needed)
+
+# Machine Learning
+scikit-learn==1.4.0
+xgboost==2.0.3
+lightgbm==4.3.0
+
+# Deep Learning (CUDA 11.8 compatible)
+torch==2.0.1
+
+# Time Series
+statsmodels==0.14.1
+prophet==1.1.5
+
+# NLP / Sentiment
+transformers==4.36.2
+sentencepiece==0.1.99
+
+# Utilities
+python-dotenv==1.0.0
+python-multipart==0.0.6
+email-validator==2.1.0
+httpx==0.26.0
+
+# Monitoring
+prometheus-client==0.19.0
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0

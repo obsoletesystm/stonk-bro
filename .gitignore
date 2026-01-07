@@ -1,0 +1,73 @@
+# Environment files
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Docker volumes (in case they're created locally)
+postgres_data/
+redis_data/
+ml_models/
+grafana_data/
+prometheus_data/
+
+# ML artifacts (if accidentally committed)
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+*.onnx
+
+# Backups
+backups/
+*.sql
+*.sql.gz
+
+# Node modules (if adding React later)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build artifacts
+frontend/build/
+frontend/dist/
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Alembic
+alembic/versions/*.pyc

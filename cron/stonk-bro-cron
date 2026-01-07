@@ -1,0 +1,60 @@
+# Stonk Bro Cron Jobs
+# Install with: crontab cron/stonk-bro-cron
+#
+# Note: Update paths to match your installation directory
+
+# Set PATH for cron environment
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Project directory
+STONK_DIR=/home/willmcnaughton/Documents/code/stonk-bro
+
+# Log directory
+LOG_DIR=/var/log/stonk-bro
+
+# ===== Daily Operations =====
+
+# Update daily stock prices (5:00 PM ET weekdays, after market close)
+# Runs Monday-Friday
+0 17 * * 1-5 cd $STONK_DIR && docker compose exec -T api python scripts/update_daily_prices.py >> $LOG_DIR/daily-update.log 2>&1
+
+# ===== Weekly Operations =====
+
+# Train ML models (Sunday 2:00 AM)
+0 2 * * 0 cd $STONK_DIR && docker compose --profile ml-training run --rm ml-trainer >> $LOG_DIR/ml-training.log 2>&1
+
+# ===== Periodic Operations =====
+
+# Fetch news (every 6 hours)
+# 0 */6 * * * cd $STONK_DIR && docker compose exec -T api python scripts/fetch_news.py >> $LOG_DIR/news.log 2>&1
+
+# Check alerts (every 15 minutes during market hours: 9:30 AM - 4:00 PM ET)
+*/15 9-16 * * 1-5 cd $STONK_DIR && docker compose exec -T api python scripts/check_alerts.py >> $LOG_DIR/alerts.log 2>&1
+
+# ===== Maintenance =====
+
+# Daily database backup (3:00 AM)
+0 3 * * * $STONK_DIR/scripts/backup.sh /backups/stonk-bro >> $LOG_DIR/backup.log 2>&1
+
+# Weekly cleanup of old data (Sunday 4:00 AM - keep 2 years)
+0 4 * * 0 cd $STONK_DIR && docker compose exec -T api python scripts/cleanup_old_data.py --days 730 >> $LOG_DIR/cleanup.log 2>&1
+
+# Weekly health check (Sunday 5:00 AM)
+0 5 * * 0 $STONK_DIR/scripts/healthcheck.sh >> $LOG_DIR/healthcheck.log 2>&1
+
+# Monthly cleanup of old backups (1st of month, 5:00 AM - keep 90 days)
+0 5 1 * * find /backups/stonk-bro -name "*.sql.gz" -mtime +90 -delete >> $LOG_DIR/backup-cleanup.log 2>&1
+
+# ===== Log Rotation =====
+
+# Rotate logs weekly (Sunday 6:00 AM - keep last 4 weeks)
+0 6 * * 0 find $LOG_DIR -name "*.log" -type f -mtime +28 -delete
+
+# Note: After editing this file, install it with:
+#   crontab cron/stonk-bro-cron
+#
+# View installed cron jobs:
+#   crontab -l
+#
+# Edit cron jobs:
+#   crontab -e
