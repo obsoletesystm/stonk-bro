@@ -1,0 +1,30 @@
+# Queues the hourly Reddit and news collection. The worker does the actual work.
+# This replaces scripts/collect_hourly.sh (docker compose) on k3s.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-collect
+  labels: {{- include "stonk.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.collector.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: queue
+              image: {{ include "stonk.image" (list . .Values.image.backend) }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command:
+                - python
+                - -c
+                - |
+                  from app.tasks.sentiment_tasks import collect_reddit_content_task, collect_news_content_task
+                  for t in (collect_reddit_content_task, collect_news_content_task):
+                      print(t.name, t.delay().id)
+              {{- include "stonk.backendEnv" . | nindent 14 }}

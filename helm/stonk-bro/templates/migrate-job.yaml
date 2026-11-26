@@ -1,0 +1,25 @@
+# Runs after install/upgrade. Waits for Postgres, then applies Alembic migrations.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migrate
+  labels: {{- include "stonk.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: {{ include "stonk.image" (list . .Values.image.backend) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h {{ .Release.Name }}-postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do sleep 3; done
+              alembic upgrade head
+          {{- include "stonk.backendEnv" . | nindent 10 }}

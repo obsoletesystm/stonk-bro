@@ -1,0 +1,10 @@
+stonk-bro installed as "{{ .Release.Name }}". URL: http://{{ .Values.ingress.host }}
+
+If the name does not resolve, publish the mDNS alias on the server (needs sudo):
+  sudo systemctl enable --now avahi-alias@{{ .Values.ingress.host }}.service
+
+Images are not pulled from a registry. Build, then import into k3s:
+  docker build -t {{ .Values.image.backend }}:{{ .Values.image.tag }} backend/
+  docker build -t {{ .Values.image.frontend }}:{{ .Values.image.tag }} frontend/
+  docker save {{ .Values.image.backend }}:{{ .Values.image.tag }} {{ .Values.image.frontend }}:{{ .Values.image.tag }} | sudo k3s ctr images import -
+Bump image.tag for every new build.

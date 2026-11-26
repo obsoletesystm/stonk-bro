@@ -1,0 +1,36 @@
+# shortcut: no persistence. Redis is only the Celery broker and cache; queued tasks are lost on a pod restart.
+# Add a PVC and --appendonly yes if you start queueing work you cannot re-run.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels: {{- include "stonk.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "stonk.sel" (list . "redis") | nindent 4 }}
+  ports:
+    - port: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels: {{- include "stonk.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "stonk.sel" (list . "redis") | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "stonk.sel" (list . "redis") | nindent 8 }}
+    spec:
+      containers:
+        - name: redis
+          image: {{ .Values.redis.image }}
+          args: ["redis-server", "--maxmemory", "1gb", "--maxmemory-policy", "allkeys-lru"]
+          ports:
+            - containerPort: 6379
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+          resources: {{- toYaml .Values.redis.resources | nindent 12 }}
