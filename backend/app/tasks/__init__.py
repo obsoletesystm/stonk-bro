@@ -15,6 +15,11 @@ from app.tasks.news_tasks import (
     update_sentiment_history_task,
     analyze_sentiment_batch_task
 )
+from app.tasks.sentiment_tasks import (
+    collect_reddit_content_task,
+    collect_news_content_task,
+    process_unprocessed_content_task
+)
 
 __all__ = [
     # Alert tasks
@@ -30,4 +35,8 @@ __all__ = [
     "fetch_news_for_symbol_task",
     "update_sentiment_history_task",
     "analyze_sentiment_batch_task",
+    # Sentiment collection tasks
+    "collect_reddit_content_task",
+    "collect_news_content_task",
+    "process_unprocessed_content_task",
 ]
