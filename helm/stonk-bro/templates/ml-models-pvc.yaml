@@ -1,0 +1,13 @@
+# Shared by api and worker. ReadWriteOnce works because k3s here is a single node.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-ml-models
+  labels: {{- include "stonk.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: {{ .Values.mlModels.storage }}

@@ -1,0 +1,63 @@
+# Stock Research Platform - Crontab Configuration
+#
+# This file contains the cron schedule for automated data collection.
+#
+# Installation:
+#   1. Copy this file: cp scripts/crontab.example scripts/crontab
+#   2. Edit paths to match your installation
+#   3. Install: crontab scripts/crontab
+#   4. Verify: crontab -l
+#
+# Logs are written to /var/log/stonk-bro/
+# Create log directory: sudo mkdir -p /var/log/stonk-bro && sudo chown $USER /var/log/stonk-bro
+
+# Environment variables for cron
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PROJECT_ROOT=/path/to/stonk-bro
+LOG_DIR=/var/log/stonk-bro
+
+# =========================================
+# Primary Data Collection
+# =========================================
+
+# Collect Reddit and news every hour on the hour
+# (queues the Celery collection tasks; no celery beat service is running)
+0 * * * * $PROJECT_ROOT/scripts/collect_hourly.sh >> $LOG_DIR/cron.log 2>&1
+
+# =========================================
+# Data Processing
+# =========================================
+
+# Process unprocessed content every 30 minutes
+# (This will be implemented in Sprint 3 - Sentiment Analysis)
+# */30 * * * * $PROJECT_ROOT/scripts/process_content.sh >> $LOG_DIR/cron.log 2>&1
+
+# =========================================
+# Market Data
+# =========================================
+
+# Fetch daily stock prices at 8 PM UTC (after US market close)
+# Runs Monday-Friday only
+# 0 20 * * 1-5 $PROJECT_ROOT/scripts/fetch_daily_prices.sh >> $LOG_DIR/cron.log 2>&1
+
+# =========================================
+# ML Model Training
+# =========================================
+
+# Train ML models weekly on Sunday at 2 AM
+# (This will be implemented in Sprint 3)
+# 0 2 * * 0 $PROJECT_ROOT/scripts/train_models.sh >> $LOG_DIR/cron.log 2>&1
+
+# =========================================
+# Maintenance
+# =========================================
+
+# Backup database daily at 3 AM
+# 0 3 * * * $PROJECT_ROOT/scripts/backup_database.sh >> $LOG_DIR/cron.log 2>&1
+
+# Clean up old logs weekly on Sunday at 4 AM
+0 4 * * 0 find $LOG_DIR -name "*.log" -mtime +30 -delete
+
+# Health check every 15 minutes
+# */15 * * * * $PROJECT_ROOT/scripts/health_check.sh >> $LOG_DIR/health.log 2>&1

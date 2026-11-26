@@ -71,3 +71,4 @@ htmlcov/
 
 # Alembic
 alembic/versions/*.pyc
+values.local.yaml

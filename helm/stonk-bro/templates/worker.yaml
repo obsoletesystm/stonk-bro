@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-worker
+  labels: {{- include "stonk.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "stonk.sel" (list . "worker") | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "stonk.sel" (list . "worker") | nindent 8 }}
+    spec:
+      containers:
+        - name: worker
+          image: {{ include "stonk.image" (list . .Values.image.backend) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["celery", "-A", "app.celery_app.celery_app", "worker", "--loglevel=info", "--concurrency={{ .Values.worker.concurrency }}"]
+          {{- include "stonk.backendEnv" . | nindent 10 }}
+          resources: {{- toYaml .Values.worker.resources | nindent 12 }}
+          volumeMounts:
+            - name: ml-models
+              mountPath: /app/ml/artifacts
+      volumes:
+        - name: ml-models
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-ml-models

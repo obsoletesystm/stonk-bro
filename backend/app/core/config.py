@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     ALPHA_VANTAGE_KEY: Optional[str] = None
     NEWS_API_KEY: Optional[str] = None
 
+    # Reddit API (PRAW)
+    REDDIT_CLIENT_ID: Optional[str] = None
+    REDDIT_CLIENT_SECRET: Optional[str] = None
+    REDDIT_USER_AGENT: str = "stonk-bro:v1.0.0 (by /u/your_username)"
+
     # TFSA Settings
     TFSA_BIRTH_YEAR: int = 1990
     TFSA_INITIAL_CONTRIBUTION_ROOM: int = 95000
