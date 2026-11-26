@@ -82,7 +82,7 @@ def upgrade() -> None:
                 ('Benzinga - All', 'news', 'https://www.benzinga.com/feed', true, NOW(), NOW()),
                 ('Globe and Mail - Business', 'news', 'https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/business/', true, NOW(), NOW()),
                 ('Financial Post', 'news', 'https://financialpost.com/feed/', true, NOW(), NOW())
-            ON CONFLICT (identifier) DO NOTHING;
+            ON CONFLICT (source_type, identifier) DO NOTHING;
         """)
     )
 

@@ -15,6 +15,7 @@ def db():
         conn.execute(text("SELECT 1 FROM raw_content LIMIT 1"))
     except Exception as e:
         pytest.skip(f"database or raw_content table not available: {e}")
+    conn.rollback()  # end the transaction the probe query started
     trans = conn.begin()
     session = Session(bind=conn)
     yield session
